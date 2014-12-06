@@ -3,6 +3,8 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.conf import settings
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
+from djorm_pgfulltext.models import SearchManager
+from djorm_pgfulltext.fields import VectorField
 from django.db import models
 from django.db.models.base import ModelBase
 from django_facebook import model_managers, settings as facebook_settings
@@ -333,6 +335,15 @@ class FacebookLike(models.Model):
     name = models.TextField(blank=True, null=True)
     category = models.TextField(blank=True, null=True)
     created_time = models.DateTimeField(blank=True, null=True)
+
+    search_index = VectorField()
+
+    objects = SearchManager(
+        fields=('name', ),
+        config = 'pg_catalog.english',
+        search_field = 'search_index',
+        auto_update_search_field = True
+    )
 
     class Meta:
         unique_together = ['user_id', 'facebook_id']
