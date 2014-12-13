@@ -4,4 +4,4 @@ include README.rest
 recursive-include django_facebook/static *
 recursive-include django_facebook/templates *
 recursive-include django_facebook/fixtures *
-recursive-include django_facebook/south_migrations *
+recursive-include django_facebook/migrations *
