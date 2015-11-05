@@ -206,7 +206,7 @@ class FacebookConnection(object):
                 # These are often temporary errors, so we will retry before
                 # failing
                 error_format = 'Facebook encountered a timeout (%ss) or error %s'
-                logger.warn(error_format, extended_timeout, unicode(e))
+                logger.warn(error_format, extended_timeout, str(e))
                 attempts -= 1
                 if not attempts:
                     # if we have no more attempts actually raise the error
@@ -649,7 +649,7 @@ class OpenFacebook(FacebookConnection):
     **Example**::
 
         graph = OpenFacebook(access_token)
-        print graph.get('me')
+        print(graph.get('me'))
 
     '''
 
@@ -859,16 +859,32 @@ class OpenFacebook(FacebookConnection):
 
         :returns: dict
         '''
+        permissions_dict = {}
         try:
             permissions = {}
             permissions_response = self.get('me/permissions')
-            if permissions_response.get('data'):
-                permissions = permissions_response['data'][0]
+
+            # determine whether we're dealing with 1.0 or 2.0+
+            for permission in permissions_response.get('data', []):
+                # graph api 2.0+, returns multiple dicts with keys 'status' and
+                # 'permission'
+                if any(value in ['granted', 'declined'] for value in permission.values()):
+                    for perm in permissions_response['data']:
+                        grant = perm.get('status') == 'granted'
+                        name = perm.get('permission')
+                        # just in case something goes sideways
+                        if grant and name:
+                            permissions_dict[name] = grant
+                # graph api 1.0, returns single dict as {permission: intval}
+                elif any(value in [0, 1, '0', '1'] for value in permission.values()):
+                    permissions = permissions_response['data'][0]
+                    permissions_dict = dict([(k, bool(int(v)))
+                                             for k, v in permissions.items()
+                                             if v == '1' or v == 1])
+                break
         except facebook_exceptions.OAuthException:
-            permissions = {}
-        permissions_dict = dict([(k, bool(int(v)))
-                                 for k, v in permissions.items()
-                                 if v == '1' or v == 1])
+            pass
+
         return permissions_dict
 
     def has_permissions(self, required_permissions):
@@ -911,15 +927,30 @@ class OpenFacebook(FacebookConnection):
         return url
 
     def request(self, path='', post_data=None, old_api=False, version=None, **params):
-        api_base_url = self.old_api_url if old_api else self.api_url
-        version = version or self.version
-        if getattr(self, 'access_token', None):
-            params['access_token'] = self.access_token
-        url = '%s%s/%s?%s' % (api_base_url, self.version,
-                              path, urlencode(params))
+        url = self.get_request_url(path=path, old_api=old_api, version=version,
+                                   **params)
         logger.info('requesting url %s', url)
         response = self._request(url, post_data)
         return response
+
+    def get_request_url(self, path='', old_api=False, version=None, **params):
+        '''
+        Gets the url for the request.
+        '''
+        api_base_url = self.old_api_url if old_api else self.api_url
+        version = version or self.version
+
+        if getattr(self, 'access_token', None):
+            params['access_token'] = self.access_token
+
+        if api_base_url.endswith('/'):
+            api_base_url = api_base_url[:-1]
+
+        if path and path.startswith('/'):
+            path = path[1:]
+
+        url = '/'.join([api_base_url, version, path])
+        return '%s?%s' % (url, urlencode(params))
 
 
 class TestUser(object):
