@@ -671,7 +671,7 @@ class OpenFacebook(FacebookConnection):
         self.current_user_id = current_user_id
 
         if version is None:
-            version = 'v1.0'
+            version = 'v2.5'
         self.version = version
 
     def __getstate__(self):
@@ -848,8 +848,8 @@ class OpenFacebook(FacebookConnection):
         '''
         me = getattr(self, '_me', None)
         if me is None:
-            self._me = me = self.get('me')
-
+            self._me = me = self.get('me',
+                                     fields=','.join(facebook_settings.FACEBOOK_DEFAULT_FIELDS))
         return me
 
     def permissions(self):

@@ -11,6 +11,10 @@ FACEBOOK_APP_SECRET = getattr(settings, 'FACEBOOK_APP_SECRET', None)
 FACEBOOK_DEFAULT_SCOPE = getattr(settings, 'FACEBOOK_DEFAULT_SCOPE', [
     'email', 'user_about_me', 'user_birthday', 'user_website'])
 
+# : The default scope we should use for v2.5 facebook graph api
+FACEBOOK_DEFAULT_FIELDS = getattr(settings, 'FACEBOOK_DEFAULT_FIELDS', [
+    'id', 'name', 'email', 'gender', 'first_name', 'last_name', 'birthday'])
+
 # : If we should store likes
 FACEBOOK_STORE_LIKES = getattr(settings, 'FACEBOOK_STORE_LIKES', False)
 # : If we should store friends
