@@ -531,7 +531,9 @@ class FacebookUserConverter(object):
         '''
         Parses the facebook response and returns the likes
         '''
-        likes_response = self.open_facebook.get('me/likes', limit=limit)
+        fields = facebook_settings.FACEBOOK_DEFAULT_LIKES_FIELDS
+        likes_response = self.open_facebook.get('me/likes', limit=limit,
+                                                fields=fields)
         likes = likes_response and likes_response.get('data')
         logger.info('found %s likes', len(likes))
         return likes
@@ -567,7 +569,8 @@ class FacebookUserConverter(object):
                 default_dict[like['id']] = dict(
                     created_time=created_time,
                     category=like.get('category'),
-                    name=name
+                    name=name,
+                    picture=like.get('picture', {}).get('data', {}).get('url')
                 )
             current_likes, inserted_likes = mass_get_or_create(
                 FacebookLike, base_queryset, id_field, default_dict,
