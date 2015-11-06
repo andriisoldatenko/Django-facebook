@@ -15,7 +15,12 @@ FACEBOOK_DEFAULT_SCOPE = getattr(settings, 'FACEBOOK_DEFAULT_SCOPE', [
 FACEBOOK_DEFAULT_FIELDS = getattr(settings, 'FACEBOOK_DEFAULT_FIELDS', [
     'id', 'name', 'email', 'gender', 'first_name', 'last_name', 'birthday'])
 
-# : If we should store likes
+FACEBOOK_DEFAULT_LIKES_FIELDS = getattr(
+    settings, 'FACEBOOK_DEFAULT_LIKES_FIELDS', [
+        "picture.type(large)", "name", "category"
+    ]
+)
+
 FACEBOOK_STORE_LIKES = getattr(settings, 'FACEBOOK_STORE_LIKES', False)
 # : If we should store friends
 FACEBOOK_STORE_FRIENDS = getattr(settings, 'FACEBOOK_STORE_FRIENDS', False)

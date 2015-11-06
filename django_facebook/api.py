@@ -533,7 +533,7 @@ class FacebookUserConverter(object):
         '''
         fields = facebook_settings.FACEBOOK_DEFAULT_LIKES_FIELDS
         likes_response = self.open_facebook.get('me/likes', limit=limit,
-                                                fields=fields)
+                                                fields=','.join(fields))
         likes = likes_response and likes_response.get('data')
         logger.info('found %s likes', len(likes))
         return likes
