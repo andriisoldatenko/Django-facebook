@@ -723,6 +723,7 @@ class OpenFacebook(FacebookConnection):
 
         :returns:  dict
         '''
+        kwargs['version'] = version
         response = self.request(path, **kwargs)
         return response
 
@@ -768,7 +769,7 @@ class OpenFacebook(FacebookConnection):
         if not params:
             params = {}
         params['method'] = 'post'
-
+        params['version'] = version
         response = self.request(path, post_data=post_data, **params)
         return response
 
@@ -932,7 +933,7 @@ class OpenFacebook(FacebookConnection):
         return response
 
     def get_request_url(self, path='', old_api=False,
-                        version=facebook_settings.FACEBOOK_API_VERSION,
+                        version=None,
                         **params):
         '''
         Gets the url for the request.
@@ -947,7 +948,8 @@ class OpenFacebook(FacebookConnection):
 
         if path and path.startswith('/'):
             path = path[1:]
-
+        if version is None:
+            version = facebook_settings.FACEBOOK_API_VERSION
         url = '/'.join([api_base_url, version, path])
         return '%s?%s' % (url, urlencode(params))
 
