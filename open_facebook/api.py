@@ -671,7 +671,7 @@ class OpenFacebook(FacebookConnection):
         self.current_user_id = current_user_id
 
         if version is None:
-            version = 'v2.5'
+            version = facebook_settings.FACEBOOK_API_VERSION
         self.version = version
 
     def __getstate__(self):
@@ -708,7 +708,8 @@ class OpenFacebook(FacebookConnection):
         authenticated = bool(me)
         return authenticated
 
-    def get(self, path, version=None, **kwargs):
+    def get(self, path, version=facebook_settings.FACEBOOK_API_VERSION,
+            **kwargs):
         '''
         Make a Facebook API call
 
@@ -722,8 +723,6 @@ class OpenFacebook(FacebookConnection):
 
         :returns:  dict
         '''
-        version = version or self.version
-        kwargs['version'] = version
         response = self.request(path, **kwargs)
         return response
 
@@ -745,7 +744,8 @@ class OpenFacebook(FacebookConnection):
         kwargs['ids'] = ','.join(ids)
         return self.request(**kwargs)
 
-    def set(self, path, params=None, version=None, **post_data):
+    def set(self, path, params=None,
+            version=facebook_settings.FACEBOOK_API_VERSION, **post_data):
         '''
         Write data to facebook
 
@@ -764,13 +764,11 @@ class OpenFacebook(FacebookConnection):
 
         :returns:  dict
         '''
-        version = version or self.version
         assert self.access_token, 'Write operations require an access token'
         if not params:
             params = {}
         params['method'] = 'post'
 
-        params['version'] = version
         response = self.request(path, post_data=post_data, **params)
         return response
 
@@ -933,12 +931,13 @@ class OpenFacebook(FacebookConnection):
         response = self._request(url, post_data)
         return response
 
-    def get_request_url(self, path='', old_api=False, version=None, **params):
+    def get_request_url(self, path='', old_api=False,
+                        version=facebook_settings.FACEBOOK_API_VERSION,
+                        **params):
         '''
         Gets the url for the request.
         '''
         api_base_url = self.old_api_url if old_api else self.api_url
-        version = version or self.version
 
         if getattr(self, 'access_token', None):
             params['access_token'] = self.access_token

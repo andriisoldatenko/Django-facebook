@@ -21,6 +21,7 @@ FACEBOOK_DEFAULT_LIKES_FIELDS = getattr(
     ]
 )
 
+FACEBOOK_API_VERSION = getattr(settings, 'FACEBOOK_API_VERSION', 'v2.5')
 FACEBOOK_STORE_LIKES = getattr(settings, 'FACEBOOK_STORE_LIKES', False)
 # : If we should store friends
 FACEBOOK_STORE_FRIENDS = getattr(settings, 'FACEBOOK_STORE_FRIENDS', False)
