@@ -339,6 +339,7 @@ class FacebookLike(models.Model):
     category = models.TextField(blank=True, null=True)
     created_time = models.DateTimeField(blank=True, null=True)
     picture = models.TextField(blank=True, null=True)
+    fan_count = models.IntegerField(blank=True, null=True)
 
     search_index = VectorField()
 

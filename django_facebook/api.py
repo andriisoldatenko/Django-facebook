@@ -570,6 +570,7 @@ class FacebookUserConverter(object):
                     created_time=created_time,
                     category=like.get('category'),
                     name=name,
+                    fan_count=like.get('fan_count'),
                     picture=like.get('picture', {}).get('data', {}).get('url')
                 )
             current_likes, inserted_likes = mass_get_or_create(
