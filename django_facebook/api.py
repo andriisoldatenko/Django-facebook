@@ -556,7 +556,8 @@ class FacebookUserConverter(object):
 
         if likes:
             from django_facebook.models import FacebookLike
-            base_queryset = FacebookLike.objects.filter(user_id=user.id)
+            # base_queryset = FacebookLike.objects.filter(user_id=user.id)
+            base_queryset = []
             global_defaults = dict(user_id=user.id)
             id_field = 'facebook_id'
             default_dict = {}
